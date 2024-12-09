@@ -41,7 +41,6 @@ export const defaults: DefaultsInstance = {
     variant: "outlined",
     density: "compact",
     hideDetails: "auto",
-    class: "my-7"
   },
   VTextarea: {
     color: "primary",
@@ -51,13 +50,11 @@ export const defaults: DefaultsInstance = {
     autoGrow: true,
     rows: 1,
     noResize: true,
-    class: "my-7"
   },
   VFileInput: {
     color: "primary",
     variant: "outlined",
     density: "compact",
     hideDetails: "auto",
-    class: "my-7"
   },
 };

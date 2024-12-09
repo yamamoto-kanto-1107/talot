@@ -4,7 +4,6 @@
         <v-navigation-drawer
             v-model="drawer"
             absolute
-            temporary
         >
             <v-list nav dense>
                 <v-list-item to="/admin">
