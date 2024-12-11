@@ -20,6 +20,9 @@
 </template>
 
 <script setup>
+definePageMeta({
+    middleware:['auth']
+})
 const { talots,getTalots } = useTalot();
 const talotData = ref([])
 talotData.value =await getTalots()

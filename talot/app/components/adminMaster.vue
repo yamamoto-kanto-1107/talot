@@ -18,10 +18,10 @@
       </v-row>
       <v-row>
         <v-col>
-            <v-data-table :headers="headers" :items="TalotsData" :search="search">
+            <v-data-table :headers="headers" :items="filterTable" :search="search">
                 <template v-slot:[`item.action`]="{ item }">
-                    <v-btn :icon="mdiPencil" @click="editItem(item)" variant="outlined" class="mr-3"></v-btn>
-                    <v-btn :icon="mdiDelete" @click="deleteItem(item)" variant="outlined"></v-btn>
+                    <v-icon :icon="mdiPencil" @click="editItem(item)" class="mr-3" color="blue"></v-icon>
+                    <v-icon :icon="mdiDelete" @click="deleteTalot(item.id,item.name)" color="red"></v-icon>
                 </template>
             </v-data-table>
         </v-col>
@@ -33,7 +33,7 @@
 import { ref } from 'vue'
 import { mdiPencil,mdiDelete } from "@mdi/js";
 
-const { talots, setPreview, getTalots } = useTalot();
+const { talots, setPreview, getTalots,deleteItem } = useTalot();
 const headers = [
     { title: '名前', key: 'name' },
     { title: 'カテゴリ１', key: 'category1' },
@@ -45,22 +45,22 @@ const TalotsData = ref()
 TalotsData.value = await getTalots()
 
 const category1 = ['大アルカナ', '小アルカナ']
-const category2 = ['なし', 'エース', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'ペイジ', 'ナイト', 'クイーン', 'キング']
+const category2 = ['なし','カップ','ペンタクル','ソード','ワンド']
 
 const search = ref('')
 const searchCategory1 = ref('')
 const searchCategory2 = ref('')
 
 
-// const filterTable = computed(() =>{
-//     return TalotsData.filter(item =>{
-//         const matchSearch = item.name.toLowerCase().includes(search.value.toLowerCase());
-//         const matchCategory1 = searchCategory1.value ? item.category1 === searchCategory1.value : true;
-//         const matchCategory2 = searchCategory2.value ? item.category2 === searchCategory2.value : true;
+const filterTable = computed(() =>{
+    return TalotsData.value.filter(item =>{
+        const matchSearch = item.name.toLowerCase().includes(search.value.toLowerCase());
+        const matchCategory1 = searchCategory1.value ? item.category1 === searchCategory1.value : true;
+        const matchCategory2 = searchCategory2.value ? item.category2 === searchCategory2.value : true;
 
-//         return matchSearch & matchCategory1 & matchCategory2
-//     })
-// })
+        return matchSearch & matchCategory1 & matchCategory2
+    })
+})
 
 const editItem = function(item){
   console.log(item)
@@ -73,7 +73,18 @@ const newItem = function(){
   navigateTo(`/admin/Alcana/0`);
 }
 
-const deleteItem = function(item){
-    console.log(item.path)
+const deleteTalot = async function(id,name){
+  const judgeDelete = window.confirm(`${name}を削除してもいいですか？`)
+  if (judgeDelete){
+    const deleteResult = await deleteItem(id)
+
+    if (deleteResult){
+      location.reload()
+    }else{
+      alert(`${id}を削除することができませんでした`)
+    }
+  }else{
+    return
+  }
 }
 </script>

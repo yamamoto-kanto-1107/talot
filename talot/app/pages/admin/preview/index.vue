@@ -41,7 +41,8 @@
                                 height="500"
                                 style="object-fit: cover; width: 300px;"
                             /> -->
-                            <img :src="imgFile" height="500" style="object-fit: cover; width: 300px;" class="backgroundCard">
+                            <img :src="getImg" height="500" style="object-fit: cover; width: 300px;" class="backgroundCard" v-if="getImg">
+                            <img :src="generateImgPath(preview.img)" class="backgroundCard" v-if="!getImg" height="500" style="object-fit: cover; width: 300px;">
                             <v-card class="backgroundCard position-absolute w-50" style="right: 50px;">
                                 <div class="text-wrap ma-3" style="font-size: 14px">{{ item.imgContent }}</div>
                             </v-card>
@@ -86,18 +87,20 @@
 </template>
 
 <script setup>
+definePageMeta({
+    middleware:['admin']
+})
 import { mdiKeyboardReturn } from "@mdi/js";
-const { preview, getImg } = useTalot();
-
-const imgFile =ref('')
-imgFile.value = getImg()
-
+const { preview, getPreviewImg} = useTalot();
 
 const item = preview
 
-// const generateImgPath = ref((img) => {
-//     return new URL(`/assets/images/${img}`, import.meta.url).href;
-// });
+const getImg = getPreviewImg()
+
+const generateImgPath = ref((img) => {
+    return new URL(`/assets/images/${img}`, import.meta.url).href;
+});
+
 
 
 </script>
@@ -108,6 +111,7 @@ const item = preview
 }
 .backgroundCard{
     border:2px solid #84331F !important;
+    border-radius: 2%;
 }
 .text-wrap {
     white-space: pre-wrap;

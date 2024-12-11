@@ -6,3 +6,8 @@
         </v-row>
     </v-container>
 </template>
+<script setup>
+definePageMeta({
+    middleware:['admin']
+})
+</script>

@@ -23,6 +23,9 @@
 </template>
 
 <script setup>
+definePageMeta({
+    middleware:['admin']
+})
 const name =ref('')
 const mailAddress = ref('')
 const password = ref('')

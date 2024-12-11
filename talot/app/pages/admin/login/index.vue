@@ -1,0 +1,3 @@
+<template>
+    <talotLogin></talotLogin>
+</template>

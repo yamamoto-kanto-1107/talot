@@ -25,7 +25,10 @@ interface Talot {
     imgContent3: string;
     contents: TalotContent;
 }
+
+//新規追加の画像があった場合に一時的に保管しておく
 const newImg = ref('')
+
 export const useTalot = ()=>{
 //     const talots: Talot[] = [
 //         {
@@ -122,13 +125,16 @@ export const useTalot = ()=>{
         },
     }
 
+    //supabaseの情報
     const supabase = useNuxtApp().$supabase
     const talots = ref<Talot[]>([]);
 
+    //talotのデータ取得(supabase)
     const fetchTalots = async () =>{
         const {data, error} = await supabase
             .from('talots')
             .select('id , no, img , category1, category2, name, background, imgContent, imgContent2, imgContent3, contents')
+            .order('no',{ascending:true})
         if (error){
             console.log(error)
         }else{
@@ -146,43 +152,93 @@ export const useTalot = ()=>{
         }
     }
 
+    //取得したデータを返す
     const getTalots = async function(){
         await fetchTalots()
         return talots.value
     };
 
-    const preview = useState<Talot>("preview", () =>
+    //プレビューの定義
+    let preview = useState<Talot>("preview", () =>
         JSON.parse(JSON.stringify(defaultItem)),
     );
 
+    //IDからタロットの情報を取得する
     const getters = async function(id : number) {
         await fetchTalots()
         return talots.value.find(v => v.id == id)
-        // return{
-        //     getTalotById: (id: number | string | null | undefined) => {
-        //         return talots.value.find(v => v.id == id);
-        //     }
-        // }
     }
 
+    //プレビューにデータを与える
     const actions = {
         setPreview: (talot: Talot = defaultItem) => preview.value = JSON.parse(JSON.stringify(talot)),
     }
 
-    const setImg = function(imgUrl:string){
-        console.log('new img from set')
-        console.log(newImg)
+    //画像の新規追加があった場合に、一時的に保存しておく（URL）
+    const setPreviewImg = (imgUrl: string) =>{
         newImg.value = imgUrl
     }
-    const getImg = function(){
-        console.log(newImg)
-        return newImg.value
+    //画像の新規追加があった場合の、画像を再度取得する（画面遷移した時用）
+    const getPreviewImg = () =>{
+        if(!newImg.value){
+            console.log('none')
+        }else{
+            return newImg.value
+        }
+    }
+    //カードマスタ画面に遷移した時に保管した画像を消す
+    const clear = () =>{
+        newImg.value = ''
     }
 
-    const insertTalotInfo = async function (){
-        console.log('call')
-        console.log(preview.value.name)
+
+    //タロットの削除
+    const deleteItem = async function(id:number){
+        const {data:deleteData,error:deleteError} = await supabase
+            .from('talots')
+            .delete()
+            .eq('id',id)
+        if(deleteError){
+            console.log(`deleteError::${deleteData}`)
+        }else{
+            console.log('suc')
+            return true
+        }
+    }
+
+    //タロットの挿入
+    const insertTalotInfo = async function (readimg:Object){
+
+        console.log(typeof(readimg))
         if(preview.value.id === 0){
+            //新規追加処理
+
+            //画像の保存先
+            const fileName = preview.value.img
+            console.log(fileName)
+            const filePath = `images/${fileName}`
+
+            try{
+                if(readimg && readimg instanceof Blob){
+                    const {data:insertImg,error:insertImgError} = await supabase.storage
+                    .from('TalotImages')
+                    .upload(filePath,readimg, {
+                        upsert: true,
+                    })
+                    if(insertImgError){
+                        console.log(insertImgError)
+
+                    }
+                }
+            }catch(error){
+                console.log(error)
+                return
+            }
+            const { data:imgUrl } = supabase
+                .storage
+                .from('TalotImages')
+                .getPublicUrl(filePath)
+
             const { data:maxIdData, error:idError } = await supabase
                 .from('talots')
                 .select('id')
@@ -190,18 +246,17 @@ export const useTalot = ()=>{
                 .limit(1)
             if (idError){
                 console.log(`idError:::${idError}`)
-            }else{
-                console.log(`maxid:::${maxIdData}`)
             }
 
-        const maxId = (maxIdData && maxIdData.length > 0) ? maxIdData[0].id : 0;
-        const nextId = maxId + 1;
+            const maxId = (maxIdData && maxIdData.length > 0) ? maxIdData[0].id : 0;
+            const nextId = maxId + 1;
+            console.log(nextId)
+            console.log(readimg)
 
             const {data:insertData,error:insertError} =await supabase
                 .from('talots')
                 .insert([
                     {
-                        id:nextId,
                         category1:preview.value.category1,
                         category2:preview.value.category2,
                         name:preview.value.name,
@@ -211,16 +266,95 @@ export const useTalot = ()=>{
                         imgContent3:preview.value.imgContent3,
                         contents:preview.value.contents,
                         no:preview.value.no,
-                        img:preview.value.img,
+                        img:imgUrl.publicUrl,
                     }
                 ])
             if(insertError){
+                console.log(insertError)
                 return false
             }else{
                 return true
             }
         }else{
-            console.log()
+            //既存のデータの編集
+            console.log(readimg)
+
+            if (newImg){
+                const fileName = preview.value.img
+                console.log(fileName)
+                const filePath = `images/${fileName}`
+
+                try{
+                    if(readimg && readimg instanceof Blob){
+                        const {data:insertImg,error:insertImgError} = await supabase.storage
+                        .from('TalotImages')
+                        .upload(filePath,readimg, {
+                            upsert: true,
+                        })
+                        if(insertImgError){
+                            console.log(insertImgError)
+
+                        }
+                    }
+                }catch(error){
+                    console.log(error)
+                    return
+                }
+                const { data:imgUrl } = supabase
+                    .storage
+                    .from('TalotImages')
+                    .getPublicUrl(filePath)
+
+                const {data:editData, error:editError} = await supabase
+                .from('talots')
+                .update([
+                    {
+                        category1:preview.value.category1,
+                        category2:preview.value.category2,
+                        name:preview.value.name,
+                        background:preview.value.background,
+                        imgContent:preview.value.imgContent,
+                        imgContent2:preview.value.imgContent2,
+                        imgContent3:preview.value.imgContent3,
+                        contents:preview.value.contents,
+                        no:preview.value.no,
+                        img:imgUrl.publicUrl,
+                    }
+                ])
+                .eq('id',preview.value.id)
+
+                if(editError){
+                    console.log(editError)
+                    return false
+                }else{
+                    return true
+                }
+            }else{
+                const {data:editData, error:editError} = await supabase
+                .from('talots')
+                .update([
+                    {
+                        category1:preview.value.category1,
+                        category2:preview.value.category2,
+                        name:preview.value.name,
+                        background:preview.value.background,
+                        imgContent:preview.value.imgContent,
+                        imgContent2:preview.value.imgContent2,
+                        imgContent3:preview.value.imgContent3,
+                        contents:preview.value.contents,
+                        no:preview.value.no,
+                    }
+                ])
+                .eq('id',preview.value.id)
+
+                if(editError){
+                    console.log(editError)
+                    return false
+                }else{
+                    return true
+                }
+            }
+
         }
     }
 
@@ -229,9 +363,11 @@ export const useTalot = ()=>{
         preview: preview.value,
         getters,
         getTalots,
-        setImg,
-        getImg,
         insertTalotInfo,
+        deleteItem,
+        setPreviewImg,
+        getPreviewImg,
+        clear,
         ...actions,
     }
 }

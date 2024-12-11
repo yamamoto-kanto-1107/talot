@@ -6,6 +6,9 @@
 </template>
 
 <script setup>
+definePageMeta({
+    middleware:['auth']
+})
 const route = useRoute();
 const { id } = route.params;
 const { getters } = useTalot();
@@ -13,7 +16,6 @@ const { talots } = useTalot();
 
 const input = ref("");
 const talot = await getters(id);
-console.log(talot)
 const items = ref(getters.talots)
 
 const drawer = ref(false)

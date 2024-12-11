@@ -6,7 +6,7 @@
             absolute
         >
             <v-list nav dense>
-                <v-list-item to="/admin">
+                <v-list-item to="/admin/home">
                     <v-list-item-title>ユーザー管理</v-list-item-title>
                 </v-list-item>
                 <v-list-item to="/admin/cardMaster">

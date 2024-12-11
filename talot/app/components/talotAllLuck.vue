@@ -31,7 +31,7 @@
                     <v-col>
                         <v-row class="position-relative">
                             <img
-                                :src="generateImgPath(item.img)"
+                                :src="item.img"
                                 height="500"
                                 style="object-fit: cover; width: 300px;"
                             />
@@ -86,6 +86,7 @@ const props = defineProps({
         required: true,
     },
 });
+
 
 const generateImgPath = ref((img) => {
     return new URL(`../assets/images/${img}`, import.meta.url).href;
