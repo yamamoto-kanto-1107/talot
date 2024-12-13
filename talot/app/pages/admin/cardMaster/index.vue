@@ -11,9 +11,6 @@
 </template>
 
 <script setup>
-definePageMeta({
-    middleware:['admin']
-})
 const a = {
     text: "aaaa",
     name: "b"

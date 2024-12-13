@@ -37,12 +37,13 @@ const props = defineProps(
              default: "",
             required: true,
         },
-        items:{
-            type:String,
-            default:''
-        }
     },
 );
+const { getTalots } =useTalot()
+
+const items =ref()
+items.value = await getTalots()
+
 const drawer = ref(false)
 </script>
 <style>

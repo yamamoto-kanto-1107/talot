@@ -207,9 +207,8 @@ export const useTalot = ()=>{
     }
 
     //タロットの挿入
-    const insertTalotInfo = async function (readimg:Object){
+    const insertTalotInfo = async function (readimg:Object,judge:boolean){
 
-        console.log(typeof(readimg))
         if(preview.value.id === 0){
             //新規追加処理
 
@@ -277,11 +276,8 @@ export const useTalot = ()=>{
             }
         }else{
             //既存のデータの編集
-            console.log(readimg)
-
-            if (newImg){
+            if (judge){
                 const fileName = preview.value.img
-                console.log(fileName)
                 const filePath = `images/${fileName}`
 
                 try{
@@ -304,6 +300,8 @@ export const useTalot = ()=>{
                     .storage
                     .from('TalotImages')
                     .getPublicUrl(filePath)
+
+                console.log(imgUrl)
 
                 const {data:editData, error:editError} = await supabase
                 .from('talots')

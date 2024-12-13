@@ -20,7 +20,6 @@
                         </v-text-field>
                         <v-switch class="w-50" label="admin" color="red" v-model="isAdmin"></v-switch>
                         <v-btn variant="outlined" class="mt-3" @click="createUser" type="submit">作成</v-btn>
-
                     </v-form>
                 </v-card-item>
             </v-card>
@@ -28,9 +27,6 @@
     </v-container>
 </template>
 <script setup>
-// definePageMeta({
-//     middleware:['admin']
-// })
 import { mdiArrowLeft,mdiEye,mdiEyeClosed } from "@mdi/js";
 const name = ref()
 const email = ref()
@@ -39,7 +35,7 @@ const isAdmin = ref()
 
 const show =ref(true)
 
-const form = ref('')
+const form = ref()
 
 const rules = {
   required: (value) => !!value || "この項目は必須です",
@@ -48,15 +44,15 @@ const rules = {
 const { addLoginUser,addAdminUser } = useLogin()
 
 const createUser = async function(){
-    if (form.value.validate){
-        console.log('call')
+    const varidResult = await form.value.validate()
+    if (varidResult.valid){
         const insertData = {
             name:name.value,
             email:email.value,
             password:password.value
         }
         try{
-            if(!isAdmin){
+            if(!isAdmin.value){
                 const result = await addLoginUser(insertData)
 
                 if (result){

@@ -30,6 +30,9 @@
   </template>
 
 <script setup>
+definePageMeta({
+    middleware:['admin']
+})
 import { ref } from 'vue'
 import { mdiPencil,mdiDelete } from "@mdi/js";
 
@@ -79,7 +82,7 @@ const deleteTalot = async function(id,name){
     const deleteResult = await deleteItem(id)
 
     if (deleteResult){
-      location.reload()
+      window.location.reload()
     }else{
       alert(`${id}を削除することができませんでした`)
     }

@@ -27,6 +27,9 @@
 
 <script setup>
 import { mdiDelete } from "@mdi/js";
+definePageMeta({
+    middleware:['admin']
+})
 
 const { deleteLoginUser,deleteAdminUser } = useLogin()
 const { getUsers,getAdmin } = useLogin()

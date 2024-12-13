@@ -17,6 +17,9 @@
     </div>
 </template>
 <script setup>
+definePageMeta({
+    middleware:['admin']
+})
 const { talots } =useTalot()
 const drawer = ref(true)
 

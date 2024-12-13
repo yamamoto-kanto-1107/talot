@@ -30,7 +30,7 @@
                                     <v-textarea class="my-6" label="画像の説明１" v-model="preview.imgContent" outlined dense :rules="[rules.required]"></v-textarea>
                                     <v-textarea class="my-6" v-model="preview.imgContent2" label="画像の説明２" outlined dense rows="1" :rules="[rules.required]"></v-textarea>
                                     <v-textarea class="my-6" v-model="preview.imgContent3" label="画像の説明３" outlined dense :rules="[rules.required]"></v-textarea>
-                                    <v-textarea class="my-6" v-model="preview.name" label="名前" outlined dense :rules="[rules.required]"></v-textarea>
+                                    <v-text-field class="my-6" v-model="preview.name" label="名前" outlined dense :rules="[rules.required]"></v-text-field>
                                     <v-select class="my-6" :items="items" v-model="preview.category1" label="カテゴリ１" :rules="[rules.required]"></v-select>
                                     <v-select class="my-6" :items="items2" v-model="preview.category2" label="カテゴリ２" :rules="[rules.required]"></v-select>
                                     <v-text-field class="my-6" v-model="preview.no" label="並び順" :rules="[rules.required]"></v-text-field>
@@ -74,7 +74,7 @@
                             </v-row>
                         </v-tabs-window-item>
                         <v-tabs-window-item>
-                            <v-expansion-panels class="mt-3">
+                            <v-expansion-panels class="mt-3" :disabled="disabled" v-model="panel" multiple>
                                 <v-expansion-panel v-for="(content,index) in preview.contents" :key="index">
                                     <v-expansion-panel-title>
                                         <h3>{{ content.title }}</h3>
@@ -152,8 +152,10 @@ const items2 = ['ワンド','カップ','ソード','ペンタクル','なし']
 const tab = ref()
 const imgFile = ref([])
 const readImg = ref()
-const form = ref()
+const form = ref('')
 const valid = ref(false)
+const disabled = ref(false)
+const panel = ref([0,1,2,3,4])
 
 
 const addText = (array) => {
@@ -191,13 +193,23 @@ const gotoPreview = function(){
 }
 
 const saveInfo =async function(){
-    preview.img = imgFile.value.name
-    const resultInsert = await insertTalotInfo(imgFile.value)
+    const validResult = await form.value.validate()
+    if (validResult.valid){
+        preview.img = imgFile.value.name
+        const judgeImg = ref(true)
+        if(imgFile.value.length == 0){
+            judgeImg.value = false
+        }else{
+            judgeImg.value = true
+        }
+        console.log(judgeImg.value)
+        const resultInsert = await insertTalotInfo(imgFile.value,judgeImg.value)
 
-    if (resultInsert){
-        navigateTo({path:'/admin/cardMaster'})
-    }else{
-        alert('データを保存できませんでした。')
+        if (resultInsert){
+            navigateTo({path:'/admin/cardMaster'})
+        }else{
+            alert('データを保存できませんでした。')
+        }
     }
 
 }
