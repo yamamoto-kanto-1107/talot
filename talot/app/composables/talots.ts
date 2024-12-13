@@ -134,6 +134,8 @@ export const useTalot = ()=>{
         const {data, error} = await supabase
             .from('talots')
             .select('id , no, img , category1, category2, name, background, imgContent, imgContent2, imgContent3, contents')
+            .order('category1',{ascending:true})
+            .order('category2',{ascending:true})
             .order('no',{ascending:true})
         if (error){
             console.log(error)
