@@ -165,7 +165,6 @@ const addText = (array) => {
 readImg.value =  getPreviewImg()
 
 const previewImg = function(){
-    console.log(imgFile.value)
     if(imgFile.value){
         const reader = new FileReader()
         reader.onload = function(e){
@@ -202,7 +201,6 @@ const saveInfo =async function(){
         }else{
             judgeImg.value = true
         }
-        console.log(judgeImg.value)
         const resultInsert = await insertTalotInfo(imgFile.value,judgeImg.value)
 
         if (resultInsert){

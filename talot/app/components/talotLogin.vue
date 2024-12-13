@@ -72,7 +72,6 @@ const alertMessage = ref("パスワードとメールアドレスが一致しま
 
 const login_btn = async () => {
   if (await form.value.validate()) {
-    console.log('call?')
     if(route.path == '/admin/login'){
       const adminUser = await signinAdmin(mailAddress.value,password.value)
       if(adminUser){
@@ -87,7 +86,6 @@ const login_btn = async () => {
         // ログイン成功
         await navigateTo("/Home");
       } else if (mailAddress.value != "" && password.value != "") {
-        console.log("call");
         alert.value = true;
       }
     }

@@ -203,7 +203,6 @@ export const useTalot = ()=>{
         if(deleteError){
             console.log(`deleteError::${deleteData}`)
         }else{
-            console.log('suc')
             return true
         }
     }
@@ -216,7 +215,6 @@ export const useTalot = ()=>{
 
             //画像の保存先
             const fileName = preview.value.img
-            console.log(fileName)
             const filePath = `images/${fileName}`
 
             try{
@@ -251,8 +249,6 @@ export const useTalot = ()=>{
 
             const maxId = (maxIdData && maxIdData.length > 0) ? maxIdData[0].id : 0;
             const nextId = maxId + 1;
-            console.log(nextId)
-            console.log(readimg)
 
             const {data:insertData,error:insertError} =await supabase
                 .from('talots')
@@ -302,8 +298,6 @@ export const useTalot = ()=>{
                     .storage
                     .from('TalotImages')
                     .getPublicUrl(filePath)
-
-                console.log(imgUrl)
 
                 const {data:editData, error:editError} = await supabase
                 .from('talots')

@@ -66,7 +66,6 @@ const filterTable = computed(() =>{
 })
 
 const editItem = function(item){
-  console.log(item)
   setPreview(item);
   navigateTo(`/admin/Alcana/${item.id}`);
 }

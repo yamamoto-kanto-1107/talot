@@ -59,7 +59,6 @@ export const useLogin = () =>{
             }
         },
         deleteLoginUser:async(id) =>{
-            console.log(id)
             const { err } = await supabase
                 .from('users')
                 .delete()
@@ -86,7 +85,6 @@ export const useLogin = () =>{
             }
         },
         addLoginUser:async (insertData) =>{
-            console.log(insertData)
             const { err } = await supabase
                 .from('users')
                 .insert([insertData])
