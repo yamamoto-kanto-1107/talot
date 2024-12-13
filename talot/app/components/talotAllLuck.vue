@@ -33,7 +33,7 @@
                             <img
                                 :src="item.img"
                                 height="500"
-                                style="object-fit: cover; width: 300px;"
+                                style="object-fit: cover; width: 300px; border:2px solid #84331F; border-radius:2%"
                             />
                             <v-card class="backgroundCard position-absolute w-50" style="right: 50px;">
                                 <div class="text-wrap ma-3" style="font-size: 14px">{{ item.imgContent }}</div>

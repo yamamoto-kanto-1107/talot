@@ -141,7 +141,7 @@ definePageMeta({
 import { mdiArrowLeft, mdiMinus, mdiPlus, mdiMenuDown, mdiMenuUp, mdiEyeClosed } from '@mdi/js';
 
 const route = useRoute();
-const { getters, preview, setPreviewImg,insertTalotInfo,getPreviewImg, clear} = useTalot();
+const { getters, preview, setPreviewImg,setImgFile,getPreviewImg, clear, insertTalotInfo,newFileImg} = useTalot();
 
 const rules = {
     required: (value) => !!value || "この項目は必須です",
@@ -172,6 +172,8 @@ const previewImg = function(){
         }
         reader.readAsDataURL(imgFile.value)
     }
+    console.log('call?')
+    setImgFile(imgFile._value.name)
 }
 
 const deleteText = (array, index) => {
@@ -187,6 +189,7 @@ const open = (id) =>{
 const gotoPreview = function(){
     if(readImg.value){
         setPreviewImg(readImg.value)
+        setImgFile(imgFile._value.name)
     }
     navigateTo({ path : '/admin/preview' })
 }
@@ -194,12 +197,11 @@ const gotoPreview = function(){
 const saveInfo =async function(){
     const validResult = await form.value.validate()
     if (validResult.valid){
-        preview.img = imgFile.value.name
-        const judgeImg = ref(true)
-        if(imgFile.value.length == 0){
-            judgeImg.value = false
-        }else{
+        const judgeImg = ref()
+        if(newFileImg.value){
             judgeImg.value = true
+        }else{
+            judgeImg.value = false
         }
         const resultInsert = await insertTalotInfo(imgFile.value,judgeImg.value)
 
@@ -209,7 +211,6 @@ const saveInfo =async function(){
             alert('データを保存できませんでした。')
         }
     }
-
 }
 
 const generateImgPath = ref((img) => {

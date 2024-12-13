@@ -29,6 +29,9 @@ interface Talot {
 //新規追加の画像があった場合に一時的に保管しておく
 const newImg = ref('')
 
+//一時保管の画像ファイル
+const newFileImg =ref('')
+
 export const useTalot = ()=>{
 //     const talots: Talot[] = [
 //         {
@@ -129,6 +132,7 @@ export const useTalot = ()=>{
     const supabase = useNuxtApp().$supabase
     const talots = ref<Talot[]>([]);
 
+
     //talotのデータ取得(supabase)
     const fetchTalots = async () =>{
         const {data, error} = await supabase
@@ -188,6 +192,10 @@ export const useTalot = ()=>{
             return newImg.value
         }
     }
+
+    const setImgFile = (imgFile:string) =>{
+        newFileImg.value = imgFile
+    }
     //カードマスタ画面に遷移した時に保管した画像を消す
     const clear = () =>{
         newImg.value = ''
@@ -209,13 +217,30 @@ export const useTalot = ()=>{
 
     //タロットの挿入
     const insertTalotInfo = async function (readimg:Object,judge:boolean){
-
         if(preview.value.id === 0){
             //新規追加処理
 
+            const { data:maxIdData, error:idError } = await supabase
+                .from('talots')
+                .select('id')
+                .order('id',{ascending:false})
+                .limit(1)
+            if (idError){
+                console.log(`idError:::${idError}`)
+            }
+
+            const maxId = (maxIdData && maxIdData.length > 0) ? maxIdData[0].id : 0;
+            const nextId = maxId + 1;
+
             //画像の保存先
-            const fileName = preview.value.img
-            const filePath = `images/${fileName}`
+            const fileName = ref('')
+            if(preview.value.img){
+                fileName.value = preview.value.img
+            }else{
+                console.log('call?')
+                fileName.value = newFileImg.value
+            }
+            const filePath = `images/${fileName.value}`
 
             try{
                 if(readimg && readimg instanceof Blob){
@@ -238,17 +263,8 @@ export const useTalot = ()=>{
                 .from('TalotImages')
                 .getPublicUrl(filePath)
 
-            const { data:maxIdData, error:idError } = await supabase
-                .from('talots')
-                .select('id')
-                .order('id',{ascending:false})
-                .limit(1)
-            if (idError){
-                console.log(`idError:::${idError}`)
-            }
-
-            const maxId = (maxIdData && maxIdData.length > 0) ? maxIdData[0].id : 0;
-            const nextId = maxId + 1;
+            console.log('url')
+            console.log(imgUrl.publicUrl)
 
             const {data:insertData,error:insertError} =await supabase
                 .from('talots')
@@ -274,9 +290,11 @@ export const useTalot = ()=>{
             }
         }else{
             //既存のデータの編集
+            console.log('call')
             if (judge){
-                const fileName = preview.value.img
-                const filePath = `images/${fileName}`
+                console.log('call1')
+                const filePath = `images/${newFileImg.value}`
+                console.log(newFileImg.value)
 
                 try{
                     if(readimg && readimg instanceof Blob){
@@ -362,6 +380,8 @@ export const useTalot = ()=>{
         setPreviewImg,
         getPreviewImg,
         clear,
+        newFileImg,
+        setImgFile,
         ...actions,
     }
 }

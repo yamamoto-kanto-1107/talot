@@ -30,7 +30,6 @@ export const useLogin = () =>{
     const actions = {
         getUsers: async() =>{
             await fetchUsers()
-            console.log(users.value)
             return users.value
         },
         getAdmin: async() =>{
@@ -39,7 +38,6 @@ export const useLogin = () =>{
         },
         signinAdmin:async(email,password) =>{
             await fetchAdmin()
-            console.log(adminUsers.value)
             if(adminUsers.value.find(v=>v.email === email && password === password)){
                 currentAdmin.value = true
                 return true
